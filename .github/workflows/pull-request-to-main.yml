@@ -5,15 +5,19 @@ on:
     branches:
       - 'main'
 jobs:
-  unit_testing:
+  integration_testing:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Run Unit Tests
-        run: |
-          chmod +x ./test/unit-tests.sh
-          ./test/unit-tests.sh
+    container: python:3.10.9-slim
+    services:
+      db:
+        image: mysql
+        env:
+          MYSQL_ROOT_PASSWORD: 123
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
   integration_testing:
     needs: unit_testing
